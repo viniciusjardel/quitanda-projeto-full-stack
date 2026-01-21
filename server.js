@@ -1,6 +1,18 @@
 const http = require('http');
 
 const server = http.createServer((req, res) => {
+    // ===== HEADERS CORS =====
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    
+    // Responder a requisições OPTIONS
+    if (req.method === 'OPTIONS') {
+        res.writeHead(200);
+        res.end();
+        return;
+    }
+    
     res.writeHead(200, { 'Content-Type': 'application/json' });
     
     if (req.url === '/api/health') {
