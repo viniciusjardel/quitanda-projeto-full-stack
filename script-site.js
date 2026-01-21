@@ -1501,27 +1501,33 @@
         }
     };
     
-    window.copyQrCode = function() {
+    window.copyQrCode = function(btn) {
         // Copiar a chave PIX configurada (mais simples e confiável)
         let settings = JSON.parse(localStorage.getItem('hortifruti_settings') || '{}');
         let pixKey = settings.pixKey || window.currentPixCode || '81992659707';
         
+        if (!pixKey) {
+            alert('⚠️ Chave PIX não foi configurada!');
+            return;
+        }
+        
         navigator.clipboard.writeText(pixKey).then(() => {
             // Mostrar feedback visual
-            let btn = event.target;
-            let originalText = btn.textContent;
-            btn.textContent = '✅ Chave copiada!';
-            btn.style.backgroundColor = '#10b981';
-            
-            setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.backgroundColor = '';
-            }, 2000);
+            if (btn) {
+                let originalText = btn.textContent;
+                btn.textContent = '✅ Chave copiada!';
+                btn.style.backgroundColor = '#10b981';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.backgroundColor = '';
+                }, 2000);
+            }
             
             console.log('✅ Chave PIX copiada:', pixKey);
         }).catch(err => {
             console.error('❌ Erro ao copiar:', err);
-            alert('Erro ao copiar chave PIX');
+            alert('Erro ao copiar chave PIX. Verifique se o PIX foi gerado corretamente.');
         });
     };
     

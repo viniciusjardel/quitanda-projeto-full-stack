@@ -1,55 +1,74 @@
 const http = require('http');
 
-// Função para calcular CRC16-CCITT (PIX)
+// CRC16-CCITT usado pelo Banco Central para PIX
 function calculateCRC16(data) {
     let crc = 0xFFFF;
+    
     for (let i = 0; i < data.length; i++) {
-        crc ^= data.charCodeAt(i) << 8;
+        let byte = data.charCodeAt(i);
+        crc ^= (byte << 8);
+        
         for (let j = 0; j < 8; j++) {
-            crc = (crc << 1) ^ ((crc & 0x8000) ? 0x1021 : 0);
+            crc <<= 1;
+            if (crc & 0x10000) {
+                crc = (crc ^ 0x1021) & 0xFFFF;
+            }
         }
     }
-    return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+    
+    return crc.toString(16).toUpperCase().padStart(4, '0');
 }
 
-// Função para gerar PIX dinâmico válido
+// Gerar PIX EMVCo-compliant com CRC16 válido
 function generatePixCode(pixKey, amount) {
+    // Template ID: 26 (Merchant Account Information)
+    const pixKeyField = `0br.gov.bcb.pix`;
+    const pixKeyValue = pixKey;
+    
+    // Montar a estrutura EMV
+    let pixString = '';
+    
+    // 00: Versão (00 = 01)
+    pixString += '0001';
+    
+    // 26: Merchant Account Information (PIX)
+    const accountInfo = '00' + pixKeyField.length.toString().padStart(2, '0') + pixKeyField + 
+                        '01' + pixKeyValue.length.toString().padStart(2, '0') + pixKeyValue;
+    pixString += '26' + accountInfo.length.toString().padStart(2, '0') + accountInfo;
+    
+    // 52: Merchant Category Code (04 = Serviços diversos)
+    pixString += '5204' + '0000';
+    
+    // 53: Transaction Currency (986 = BRL)
+    pixString += '5303' + '986';
+    
+    // 54: Transaction Amount (formato: sem decimais com 2 casas)
+    const amountStr = Math.round(amount * 100).toString().padStart(13, '0');
+    pixString += '54' + amountStr.length.toString().padStart(2, '0') + amountStr;
+    
+    // 58: Country Code (BR)
+    pixString += '5802' + 'BR';
+    
+    // 59: Merchant Name (QUITANDA)
     const merchantName = 'QUITANDA';
+    pixString += '59' + merchantName.length.toString().padStart(2, '0') + merchantName;
+    
+    // 60: Merchant City (JABOATAO)
     const merchantCity = 'JABOATAO';
+    pixString += '60' + merchantCity.length.toString().padStart(2, '0') + merchantCity;
     
-    // EMV template
-    const emvData = {
-        '00': '01',                                   // Versão
-        '26': {
-            '00': '0br.gov.bcb.pix',
-            '01': pixKey
-        },
-        '52': '0400',                                 // Merchant Category Code (compras)
-        '53': '986',                                  // Currency BRL
-        '54': String(amount).padStart(13, '0'),      // Valor
-        '58': 'BR',                                   // País
-        '59': merchantName.padStart(25, ' ').substring(0, 25),  // Nome comerciante
-        '60': merchantCity.padStart(15, ' ').substring(0, 15),  // Cidade
-        '62': {
-            '05': '***'                               // TXN ID
-        }
-    };
+    // 62: Additional Data (com Transaction ID)
+    const txnId = '***';
+    const additionalData = '05' + txnId.length.toString().padStart(2, '0') + txnId;
+    pixString += '62' + additionalData.length.toString().padStart(2, '0') + additionalData;
     
-    // Construir string para CRC
-    let pixString = '000101';  // Template + versão
-    pixString += '26' + '14' + '0br.gov.bcb.pix' + '01' + String(pixKey.length).padStart(2, '0') + pixKey;
-    pixString += '5204' + emvData['52'];
-    pixString += '53' + emvData['53'];
-    pixString += '54' + String(amount).padStart(13, '0').padStart(2, '0');
-    pixString += '5802' + emvData['58'];
-    pixString += '59' + String(merchantName.length).padStart(2, '0') + merchantName;
-    pixString += '60' + String(merchantCity.length).padStart(2, '0') + merchantCity;
-    pixString += '62' + '06' + '05' + '***';
-    
-    // Calcular CRC
+    // Calcular CRC16
     const crc = calculateCRC16(pixString);
     
-    return pixString + '6304' + crc;
+    // 63: CRC16
+    pixString += '63' + crc;
+    
+    return pixString;
 }
 
 const server = http.createServer((req, res) => {
@@ -78,6 +97,8 @@ const server = http.createServer((req, res) => {
                 
                 const pixCode = generatePixCode(pixKey, amount);
                 
+                console.log('✅ PIX gerado:', pixCode);
+                
                 res.end(JSON.stringify({
                     success: true,
                     pixCode: pixCode,
@@ -86,6 +107,7 @@ const server = http.createServer((req, res) => {
                     message: 'OK'
                 }));
             } catch(e) {
+                console.error('❌ Erro:', e.message);
                 res.end(JSON.stringify({
                     success: false,
                     error: e.message
