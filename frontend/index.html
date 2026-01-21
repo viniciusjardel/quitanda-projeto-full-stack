@@ -654,5 +654,19 @@
     <script src="https://cdn.jsdelivr.net/npm/brcode@2.3.1/dist/brcode.min.js"></script>
 
     <script src="script-site.js"></script>
+    
+    <!-- Auto-configurar chave PIX se não existir -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const settings = JSON.parse(localStorage.getItem('hortifruti_settings') || '{}');
+                if (!settings.pixKey) {
+                    settings.pixKey = '81992659707';
+                    localStorage.setItem('hortifruti_settings', JSON.stringify(settings));
+                    console.log('✅ Chave PIX 81992659707 configurada!');
+                }
+            }, 300);
+        });
+    </script>
 </body>
 </html>
