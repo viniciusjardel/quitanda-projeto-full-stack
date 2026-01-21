@@ -57,18 +57,13 @@ function generatePixCode(pixKey, amount) {
     // 58: Country Code (sempre BR)
     pixString += '5802BR';
     
-    // 59: Merchant Name
-    const merchantName = 'QUITANDA VILA';
-    pixString += '59' + String(merchantName.length).padStart(2, '0') + merchantName;
+    // 59: Merchant Name (OPTIONAL - remover se der erro)
+    // const merchantName = 'QUITANDA';
+    // pixString += '59' + String(merchantName.length).padStart(2, '0') + merchantName;
     
-    // 60: Merchant City
-    const merchantCity = 'JABOATAODOSGUARARAPES';
-    pixString += '60' + String(merchantCity.length).padStart(2, '0') + merchantCity;
-    
-    // 62: Additional Data Field Template (REMOVER - alguns bancos rejeitam)
-    // const refLabel = '***00';
-    // let additionalData = '05' + String(refLabel.length).padStart(2, '0') + refLabel;
-    // pixString += '62' + String(additionalData.length).padStart(2, '0') + additionalData;
+    // 60: Merchant City (OPTIONAL - remover se der erro)
+    // const merchantCity = 'JABOATAO';
+    // pixString += '60' + String(merchantCity.length).padStart(2, '0') + merchantCity;
     
     // Calcular CRC16 ANTES de adicionar o campo CRC
     const crc16 = calculateCRC16(pixString);
