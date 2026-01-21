@@ -219,5 +219,27 @@
     </div>
 
     <script src="script.js"></script>
+    <script>
+        // Auto-carregar e salvar chave PIX do Nubank na inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                // Carregar settings do localStorage
+                const settings = JSON.parse(localStorage.getItem('hortifruti_settings') || '{}');
+                
+                // Se não tem chave PIX configurada, adicionar a do Nubank
+                if (!settings.pixKey) {
+                    settings.pixKey = '81992659707'; // Chave PIX do telefone
+                    localStorage.setItem('hortifruti_settings', JSON.stringify(settings));
+                    console.log('✅ Chave PIX 81992659707 configurada automaticamente!');
+                    
+                    // Recarregar o campo se existir
+                    const pixInput = document.getElementById('pixKeyInput');
+                    if (pixInput) {
+                        pixInput.value = '81992659707';
+                    }
+                }
+            }, 500);
+        });
+    </script>
 </body>
 </html>
