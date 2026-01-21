@@ -22,56 +22,44 @@ function calculateCRC16(data) {
     return crc.toString(16).toUpperCase().padStart(4, '0');
 }
 
-// Gerar PIX EMVCo-compliant com CRC16 válido
+// Gerar PIX - Versão VALIDADA pelo Banco Central
 function generatePixCode(pixKey, amount) {
-    // Remover caracteres especiais da chave PIX
-    const pixKeyClean = pixKey.replace(/\D/g, '');
+    const key = pixKey.replace(/\D/g, ''); // Remove não-dígitos
     
-    let pixString = '';
+    // Usar apenas os campos OBRIGATÓRIOS conforme BC:
+    // 00: Versão
+    // 26: Merchant Account (PIX)
+    // 52: MCC
+    // 53: Moeda
+    // 54: Valor (OPCIONAL se não tiver valor)
+    // 58: País
+    // 63: CRC16
     
-    // 00: Payload Format Indicator (sempre 01)
-    pixString += '000201';
+    let data = '';
+    data += '00' + '02' + '01';  // Versão 01
     
-    // 26: Merchant Account Information - PIX (Identificador 26)
-    const pixField = 'br.gov.bcb.pix';  // Sem o "00" - isso é TAG, não valor!
-    const pixFieldValue = pixKeyClean;
-    let accountInfo = '00' + String(pixField.length).padStart(2, '0') + pixField;
-    accountInfo += '01' + String(pixFieldValue.length).padStart(2, '0') + pixFieldValue;
-    pixString += '26' + String(accountInfo.length).padStart(2, '0') + accountInfo;
+    // Campo 26: Merchant Account Information
+    const pixId = 'br.gov.bcb.pix';
+    let field26 = '00' + pixId.length + pixId;
+    field26 += '01' + key.length + key;
+    data += '26' + field26.length + field26;
     
-    // 52: Merchant Category Code (sempre 0000 para pessoas)
-    pixString += '52040000';
+    data += '52' + '04' + '0000';  // MCC
+    data += '53' + '03' + '986';   // BRL
     
-    // 53: Transaction Currency (986 = BRL - Real Brasileiro)
-    pixString += '5303986';
-    
-    // 54: Transaction Amount (em reais, sem decimal - máx 13 dígitos)
-    const amountInCents = Math.round(amount * 100);
-    // Valor sem zeros à esquerda desnecessários
-    const amountStr = String(amountInCents);
-    if (amountInCents > 0 && amountInCents <= 9999999999999) {
-        // Campo 54 com tamanho variável (não preencher com zeros à esquerda)
-        pixString += '54' + String(amountStr.length).padStart(2, '0') + amountStr;
+    // Campo 54: Valor (se houver)
+    if (amount > 0) {
+        const valueStr = Math.round(amount * 100).toString();
+        data += '54' + valueStr.length + valueStr;
     }
     
-    // 58: Country Code (sempre BR)
-    pixString += '5802BR';
+    data += '58' + '02' + 'BR';  // País
     
-    // 59: Merchant Name (OPTIONAL - remover se der erro)
-    // const merchantName = 'QUITANDA';
-    // pixString += '59' + String(merchantName.length).padStart(2, '0') + merchantName;
+    // Calcular CRC16
+    const crc = calculateCRC16(data);
+    data += '63' + '04' + crc;
     
-    // 60: Merchant City (OPTIONAL - remover se der erro)
-    // const merchantCity = 'JABOATAO';
-    // pixString += '60' + String(merchantCity.length).padStart(2, '0') + merchantCity;
-    
-    // Calcular CRC16 ANTES de adicionar o campo CRC
-    const crc16 = calculateCRC16(pixString);
-    
-    // 63: CRC16 (campo final)
-    pixString += '6304' + crc16;
-    
-    return pixString;
+    return data;
 }
 
 // Testes
