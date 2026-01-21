@@ -36,7 +36,7 @@ function generatePixCode(pixKey, amount) {
     let field26 = sub00 + sub01;
     data += '26' + String(field26.length).padStart(2, '0') + field26;
     
-    data += '52' + '04' + '0000';  // MCC
+    data += '52' + '04' + '5411';  // MCC - Supermercado/Hortifruti
     data += '53' + '03' + '986';   // BRL
     
     // Campo 54: Valor (REMOVIDO - alguns bancos rejeitam PIX com valor pré-definido)
@@ -44,6 +44,10 @@ function generatePixCode(pixKey, amount) {
     //     const valueStr = Math.round(amount * 100).toString();
     //     data += '54' + String(valueStr.length).padStart(2, '0') + valueStr;
     // }
+    
+    // Campo 59: Nome do recebedor (obrigatório em PIX dinâmico)
+    const merchantName = 'Quitanda Villa Natal';
+    data += '59' + String(merchantName.length).padStart(2, '0') + merchantName;
     
     data += '58' + '02' + 'BR';  // País
     
