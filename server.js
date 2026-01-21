@@ -1,4 +1,5 @@
 const http = require('http');
+const brcode = require('brcode');
 
 const server = http.createServer((req, res) => {
     // ===== HEADERS CORS =====
@@ -25,10 +26,13 @@ const server = http.createServer((req, res) => {
                 const data = JSON.parse(body);
                 const { pixKey, amount } = data;
                 
-                // Gerar um código PIX simples (chave PIX com valor)
-                // Formato simplificado: 00020126... (padrão PIX)
-                // Para simplicidade, retornar chave + identificação
-                const pixCode = `00020126360014br.gov.bcb.pix0136${pixKey}520400005303986540${String(amount).padStart(10, '0')}5802BR5913QUITANDA6009Jaboatao62410503***63047D3C`;
+                // Gerar código PIX válido com brcode
+                const pixCode = brcode.encode({
+                    key: pixKey,
+                    name: 'QUITANDA',
+                    city: 'JABOATAO',
+                    transactionAmount: amount
+                });
                 
                 res.end(JSON.stringify({
                     success: true,

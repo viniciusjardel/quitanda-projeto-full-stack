@@ -1442,9 +1442,7 @@
             }
             
             // ===== CHAMAR BACKEND PARA GERAR PIX VÁLIDO =====
-            const backendUrl = window.location.origin.includes('localhost') 
-                ? 'http://localhost:3000' 
-                : window.location.origin; // Em produção, use o mesmo domínio
+            const backendUrl = 'https://quitanda-backend.onrender.com';
             
             console.log('📡 Chamando backend:', backendUrl + '/api/gerar-pix');
             
@@ -1498,7 +1496,7 @@
             console.error('❌ Erro ao gerar QR Code:', error);
             container.innerHTML = `
                 <p class="text-red-500 font-bold">❌ Erro ao conectar com o servidor</p>
-                <p class="text-sm text-gray-600 mt-2">Verifique se o backend está rodando em http://localhost:3000</p>
+                <p class="text-sm text-gray-600 mt-2">Backend: https://quitanda-backend.onrender.com</p>
             `;
         }
     };
