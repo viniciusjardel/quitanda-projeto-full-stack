@@ -45,10 +45,12 @@ function generatePixCode(pixKey, amount) {
     // 53: Transaction Currency (986 = BRL - Real Brasileiro)
     pixString += '5303986';
     
-    // 54: Transaction Amount (em reais, sem decimal)
+    // 54: Transaction Amount (em reais, sem decimal - máx 13 dígitos)
     const amountInCents = Math.round(amount * 100);
-    const amountStr = String(amountInCents).padStart(13, '0');
-    if (amountInCents > 0) {
+    // Valor sem zeros à esquerda desnecessários
+    const amountStr = String(amountInCents);
+    if (amountInCents > 0 && amountInCents <= 9999999999999) {
+        // Campo 54 com tamanho variável (não preencher com zeros à esquerda)
         pixString += '54' + String(amountStr.length).padStart(2, '0') + amountStr;
     }
     
