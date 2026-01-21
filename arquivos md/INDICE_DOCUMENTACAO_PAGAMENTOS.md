@@ -1,6 +1,20 @@
 # 📚 ÍNDICE COMPLETO - NOVO SISTEMA DE PAGAMENTOS
 
-## 🚀 COMECE AQUI
+## 🚀 COMECE AQUI - ÚLTIMA ATUALIZAÇÃO
+
+### 0️⃣ **RESUMO_CORRECOES.md** ⭐ NOVO (2 minutos)
+   - 🔧 Correção do Erro 2055 do Banco Central
+   - 🔧 QR Code agora funciona
+   - 🔧 Copiar PIX agora funciona
+   - ✅ Validação local testada
+
+### 0️⃣ **CORRECAO_QRCODE_PIX.md** ⭐ NOVO (Completo)
+   - 📋 O que foi corrigido
+   - 🧪 Como testar (3 maneiras)
+   - 🔍 Se ainda houver problema
+   - 📊 Estrutura do código PIX
+
+---
 
 ### 1️⃣ **START_RAPIDO_PAGAMENTOS.md** (3 minutos)
    - Passo 1: Configurar PIX
@@ -73,17 +87,22 @@
 
 ## 🎯 REFERÊNCIA RÁPIDA
 
-### Arquivos Novos (6):
+### Arquivos Novos (8):
 1. `mercado-pago-integration.js` - Integração Mercado Pago
-2. `GUIA_PAGAMENTOS.md` - Guia completo
-3. `RESUMO_PAGAMENTOS.md` - Resumo técnico
-4. `CHECKLIST_TESTES_PAGAMENTOS.md` - Testes
-5. `EXEMPLO_BACKEND_PAGAMENTOS.js` - Exemplos backend
-6. `START_RAPIDO_PAGAMENTOS.md` - Quick start
+2. `testar_pix.js` - Teste de geração de PIX ⭐ NOVO
+3. `GUIA_PAGAMENTOS.md` - Guia completo
+4. `RESUMO_PAGAMENTOS.md` - Resumo técnico
+5. `CHECKLIST_TESTES_PAGAMENTOS.md` - Testes
+6. `EXEMPLO_BACKEND_PAGAMENTOS.js` - Exemplos backend
+7. `START_RAPIDO_PAGAMENTOS.md` - Quick start
+8. `CORRECAO_QRCODE_PIX.md` - Documentação das correções ⭐ NOVO
+9. `RESUMO_CORRECOES.md` - Resumo executivo ⭐ NOVO
 
-### Arquivos Modificados (2):
-1. `index.html` - +250 linhas (modais)
-2. `script-site.js` - +330 linhas (funções)
+### Arquivos Modificados (4):
+1. `server.js` - Função generatePixCode corrigida ✅
+2. `index.html` - Botão onclick corrigido ✅
+3. `script-site.js` - Funções generateQrCode e copyQrCode refatoradas ✅
+4. `INDICE_DOCUMENTACAO_PAGAMENTOS.md` - Índice atualizado ✅
 
 ---
 
@@ -91,13 +110,14 @@
 
 ### Rota 1: Quick Start (10 minutos)
 ```
-START_RAPIDO_PAGAMENTOS.md (3 min)
+RESUMO_CORRECOES.md (2 min) ⭐ COMECE AQUI
+        ↓
+CORRECAO_QRCODE_PIX.md → Como testar (3 min)
         ↓
 Começar a usar (pronto!)
         ↓
-NOVO_SISTEMA_PAGAMENTOS.md (5 min)
-        ↓
-Conceitos principais
+START_RAPIDO_PAGAMENTOS.md (5 min)
+```
 ```
 
 ### Rota 2: Completo (1 hora)
