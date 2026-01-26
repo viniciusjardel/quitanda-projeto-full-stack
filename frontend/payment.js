@@ -1,5 +1,8 @@
 // ===== CONFIGURAÇÃO PIX =====
-const API_BASE = 'http://localhost:3000'; // Alterar para URL do backend em produção
+// Detectar ambiente automaticamente
+const API_BASE = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3000' 
+    : 'https://quitanda-projeto-full-stack-1.onrender.com';
 
 // Estado do pagamento
 let currentPaymentState = {
@@ -148,6 +151,7 @@ window.closePixModal = function() {
 async function generatePix(amount) {
     try {
         console.log(`💰 Gerando PIX de R$ ${amount.toFixed(2)}`);
+        console.log(`🔗 Chamando API: ${API_BASE}/pix`);
         
         const response = await fetch(`${API_BASE}/pix`, {
             method: 'POST',
@@ -156,33 +160,53 @@ async function generatePix(amount) {
             },
             body: JSON.stringify({
                 valor: amount,
-                descricao: 'Compra Hortifruti Vila Natal'
+                descricao: 'Compra Quitanda Villa Natal'
             })
         });
         
         if (!response.ok) {
-            throw new Error('Erro na API');
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(`Erro na API: ${response.status} - ${errorData.error || 'Erro desconhecido'}`);
         }
         
         const data = await response.json();
         
         console.log('✅ PIX gerado com sucesso:', data);
         
-        // Exibir QR Code e código PIX
-        document.getElementById('pixKey').textContent = data.qr_code || 'Código PIX indisponível';
+        // Obter container do PIX
+        const pixKeyElement = document.getElementById('pixKey');
+        const pixContainer = pixKeyElement.parentElement;
+        
+        // Limpar conteúdo anterior
+        pixContainer.innerHTML = '';
         
         // Se houver QR Code em base64, mostrar como imagem
         if (data.qr_code_base64) {
-            const pixContainer = document.getElementById('pixKey').parentElement;
             pixContainer.innerHTML = `
-                <img src="data:image/png;base64,${data.qr_code_base64}" 
-                     alt="QR Code PIX" 
-                     style="width: 200px; height: 200px; margin: 0 auto; display: block;">
-                <p style="text-align: center; margin-top: 10px; font-size: 12px; color: #666;">
+                <div style="text-align: center;">
+                    <img src="data:image/png;base64,${data.qr_code_base64}" 
+                         alt="QR Code PIX" 
+                         style="width: 220px; height: 220px; margin: 15px auto; display: block; border: 2px solid #ddd; border-radius: 8px;">
+                    <p style="text-align: center; margin-top: 15px; font-size: 12px; color: #666; word-break: break-all; font-family: monospace; padding: 0 5px;">
+                        ${data.qr_code}
+                    </p>
+                </div>
+            `;
+        } else if (data.qr_code) {
+            // Fallback: mostrar apenas o código
+            pixContainer.innerHTML = `
+                <p style="text-align: center; font-size: 12px; color: #666; word-break: break-all; font-family: monospace; padding: 0 5px;">
                     ${data.qr_code}
                 </p>
             `;
         }
+        
+        // Adicionar botão de copiar
+        const copyBtn = document.createElement('button');
+        copyBtn.textContent = '📋 Copiar Chave PIX';
+        copyBtn.className = 'w-full mt-3 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition';
+        copyBtn.onclick = () => window.copyPix(data.qr_code);
+        pixContainer.appendChild(copyBtn);
         
         // Salvar ID do pagamento
         currentPaymentState.paymentId = data.id;
@@ -197,7 +221,16 @@ async function generatePix(amount) {
         
     } catch (error) {
         console.error('❌ Erro ao gerar PIX:', error);
-        alert('❌ Erro ao gerar PIX. Tente novamente.');
+        alert(`❌ Erro ao gerar PIX: ${error.message}`);
+        
+        // Mostrar mensagem de erro no modal
+        const pixKeyElement = document.getElementById('pixKey');
+        if (pixKeyElement) {
+            pixKeyElement.textContent = `Erro: ${error.message}`;
+            pixKeyElement.style.color = '#dc2626';
+        }
+    }
+}
         closePixModal();
     }
 }
@@ -261,20 +294,48 @@ function handlePaymentSuccess(paymentId, paymentData) {
 }
 
 // Copiar PIX
-window.copyPix = function() {
-    const pixKey = document.getElementById('pixKey');
-    if (!pixKey) return;
+window.copyPix = function(pixCode) {
+    // Se receber o código como parâmetro, use-o. Caso contrário, tente extrair do DOM
+    let text = pixCode;
     
-    // Se for imagem, copiar o texto abaixo
-    const text = pixKey.textContent || pixKey.innerText;
+    if (!text) {
+        const pixContainer = document.getElementById('pixKey').parentElement;
+        const pixElement = pixContainer.querySelector('p');
+        text = pixElement ? pixElement.textContent : document.getElementById('pixKey').textContent;
+    }
+    
+    if (!text) {
+        alert('❌ Código PIX não encontrado');
+        return;
+    }
     
     if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {
-            alert('📋 PIX copiado!');
+            alert('✅ Código PIX copiado para a área de transferência!');
+        }).catch(() => {
+            // Fallback
+            copiarComFallback(text);
         });
     } else {
         // Fallback para browsers antigos
-        const textarea = document.createElement('textarea');
+        copiarComFallback(text);
+    }
+};
+
+// Função auxiliar para copiar (fallback)
+function copiarComFallback(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+        document.execCommand('copy');
+        alert('✅ Código PIX copiado para a área de transferência!');
+    } catch (err) {
+        alert('❌ Erro ao copiar. Por favor, copie manualmente.');
+    }
+    document.body.removeChild(textarea);
+}
         textarea.value = text;
         document.body.appendChild(textarea);
         textarea.select();
