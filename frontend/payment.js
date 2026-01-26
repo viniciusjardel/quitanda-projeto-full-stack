@@ -53,7 +53,8 @@ window.closeDeliveryModal = function() {
 
 // Selecionar tipo de entrega
 window.selectDeliveryType = function(type) {
-    console.log('%c✅ TIPO DE ENTREGA SELECIONADO: ' + type, 'color: green; font-size: 14px; font-weight: bold;');
+    console.log('%c✅ TIPO DE ENTREGA SELECIONADO: ' + type, 'color: green; font-size: 16px; font-weight: bold;');
+    console.warn('selectDeliveryType foi chamada com tipo:', type);
     
     const localBtn = document.getElementById('localBtn');
     const deliveryBtn = document.getElementById('deliveryBtn');
@@ -74,14 +75,16 @@ window.selectDeliveryType = function(type) {
         updateDeliveryTotal();
     }
     
-    // Garantir que o botão fique visível - remover hidden e adicionar display block
+    // Garantir que o botão fique visível
     if (confirmBtn) {
         confirmBtn.classList.remove('hidden');
         confirmBtn.style.display = 'block';
     }
     
+    // DEFINIR A VARIÁVEL GLOBAL
     window.selectedDeliveryType = type;
-    console.log('window.selectedDeliveryType agora é:', window.selectedDeliveryType);
+    console.log('✅ window.selectedDeliveryType agora é:', window.selectedDeliveryType);
+    console.log('typeof window.selectedDeliveryType:', typeof window.selectedDeliveryType);
 };
 
 // Atualizar total com delivery
@@ -98,13 +101,15 @@ function updateDeliveryTotal() {
 // Confirmar entrega e ir para pagamento PIX
 window.confirmDelivery = function() {
     try {
-        console.log('✅ Confirmando entrega e gerando PIX automaticamente');
+        console.log('%c🔴 CONFIRMAR ENTREGA CLICADO 🔴', 'color: red; font-size: 16px; font-weight: bold;');
         console.log('selectedDeliveryType:', window.selectedDeliveryType);
+        console.log('typeof selectedDeliveryType:', typeof window.selectedDeliveryType);
+        console.log('Variável está undefined?', window.selectedDeliveryType === undefined);
         
         // Validações
         if (!window.selectedDeliveryType) {
-            console.error('❌ Nenhum tipo de entrega selecionado');
-            alert('⚠️ Selecione um tipo de entrega');
+            console.error('%c❌ Nenhum tipo de entrega selecionado', 'color: red; font-size: 14px; font-weight: bold;');
+            alert('⚠️ Selecione um tipo de entrega primeiro!\n\nClique em "🏪 Retirar no Local" ou "🚗 Entrega (Delivery)"');
             return;
         }
         
