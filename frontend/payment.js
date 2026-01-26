@@ -38,6 +38,24 @@ window.openDeliveryModal = function() {
 
 console.log('✅ window.openDeliveryModal definida');
 
+// Configurar event listener do botão Confirmar
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔧 Configurando event listeners...');
+    
+    const confirmBtn = document.getElementById('confirmDeliveryBtn');
+    if (confirmBtn) {
+        console.log('✅ Botão Confirmar encontrado, adicionando listener');
+        confirmBtn.addEventListener('click', function(e) {
+            console.log('🖱️ CLIQUE NO BOTÃO CONFIRMAR DETECTADO!');
+            e.preventDefault();
+            e.stopPropagation();
+            window.confirmDelivery();
+        });
+    } else {
+        console.error('❌ Botão Confirmar NÃO encontrado!');
+    }
+});
+
 // Fechar modal de entrega
 window.closeDeliveryModal = function() {
     const modal = document.getElementById('deliveryModal');
@@ -57,6 +75,14 @@ window.selectDeliveryType = function(type) {
     const deliveryTotal = document.getElementById('deliveryTotal');
     const confirmBtn = document.getElementById('confirmDeliveryBtn');
     
+    console.log('Elementos encontrados:', {
+        localBtn: !!localBtn,
+        deliveryBtn: !!deliveryBtn,
+        deliveryForm: !!deliveryForm,
+        deliveryTotal: !!deliveryTotal,
+        confirmBtn: !!confirmBtn
+    });
+    
     if (type === 'local') {
         localBtn.classList.add('border-green-500', 'bg-green-50');
         deliveryBtn.classList.remove('border-blue-500', 'bg-blue-50');
@@ -70,12 +96,16 @@ window.selectDeliveryType = function(type) {
         updateDeliveryTotal();
     }
     
-    // Garantir que o botão fique visível
-    confirmBtn.classList.remove('hidden');
+    // Garantir que o botão fique visível - remover hidden e adicionar display block
+    if (confirmBtn) {
+        confirmBtn.classList.remove('hidden');
+        confirmBtn.style.display = 'block';
+        console.log('✅ Botão Confirmar visível, classes:', confirmBtn.className);
+        console.log('✅ Botão pronto para clique');
+    }
     
     window.selectedDeliveryType = type;
     console.log(`✅ Tipo de entrega definido: ${type}, botão visível`);
-    console.log('Botão:', confirmBtn);
 };
 
 // Atualizar total com delivery
@@ -91,41 +121,48 @@ function updateDeliveryTotal() {
 
 // Confirmar entrega e ir para pagamento
 window.confirmDelivery = function() {
-    console.log('✅ Confirmando entrega e indo para pagamento');
-    console.log('selectedDeliveryType:', window.selectedDeliveryType);
-    
-    // Validações
-    if (!window.selectedDeliveryType) {
-        console.error('❌ Nenhum tipo de entrega selecionado');
-        alert('⚠️ Selecione um tipo de entrega');
-        return;
-    }
-    
-    console.log('Tipo selecionado:', window.selectedDeliveryType);
-    
-    if (window.selectedDeliveryType === 'delivery') {
-        const name = document.getElementById('deliveryName').value.trim();
-        const phone = document.getElementById('deliveryPhone').value.trim();
-        const address = document.getElementById('deliveryAddress').value.trim();
+    try {
+        console.log('🔴🔴🔴 FUNÇÃO confirmDelivery CHAMADA 🔴🔴🔴');
+        console.log('selectedDeliveryType:', window.selectedDeliveryType);
         
-        console.log('Validando dados:', { name, phone, address });
-        
-        if (!name || !phone || !address) {
-            console.error('❌ Dados incompletos');
-            alert('⚠️ Preencha todos os dados de entrega');
+        // Validações
+        if (!window.selectedDeliveryType) {
+            console.error('❌ Nenhum tipo de entrega selecionado');
+            alert('⚠️ Selecione um tipo de entrega');
             return;
         }
         
-        // Armazenar dados de entrega
-        window.deliveryData = { name, phone, address };
-        console.log('✅ Dados de entrega armazenados:', window.deliveryData);
+        console.log('✅ Tipo selecionado:', window.selectedDeliveryType);
+        
+        if (window.selectedDeliveryType === 'delivery') {
+            const name = document.getElementById('deliveryName').value.trim();
+            const phone = document.getElementById('deliveryPhone').value.trim();
+            const address = document.getElementById('deliveryAddress').value.trim();
+            
+            console.log('Validando dados:', { name, phone, address });
+            
+            if (!name || !phone || !address) {
+                console.error('❌ Dados incompletos');
+                alert('⚠️ Preencha todos os dados de entrega');
+                return;
+            }
+            
+            // Armazenar dados de entrega
+            window.deliveryData = { name, phone, address };
+            console.log('✅ Dados de entrega armazenados:', window.deliveryData);
+        }
+        
+        console.log('📦 Fechando modal de entrega...');
+        window.closeDeliveryModal();
+        
+        console.log('💳 Abrindo modal PIX...');
+        window.openPixModal();
+        
+        console.log('✅✅✅ FLUXO COMPLETO EXECUTADO COM SUCESSO ✅✅✅');
+    } catch (error) {
+        console.error('💥 ERRO EM confirmDelivery:', error);
+        alert('❌ Erro ao processar entrega: ' + error.message);
     }
-    
-    console.log('Fechando modal de entrega...');
-    window.closeDeliveryModal();
-    console.log('Abrindo modal PIX...');
-    window.openPixModal();
-    console.log('✅ Fluxo completo de confirmação executado');
 };
 
 // Abrir modal PIX
