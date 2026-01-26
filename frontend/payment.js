@@ -231,9 +231,6 @@ async function generatePix(amount) {
         }
     }
 }
-        closePixModal();
-    }
-}
 
 // Iniciar polling de status
 function startPaymentPolling(paymentId) {
