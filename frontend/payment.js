@@ -64,10 +64,12 @@ window.selectDeliveryType = function(type) {
         updateDeliveryTotal();
     }
     
+    // Garantir que o botão fique visível
     confirmBtn.classList.remove('hidden');
-    confirmBtn.classList.add('block');
     
     window.selectedDeliveryType = type;
+    console.log(`✅ Tipo de entrega definido: ${type}, botão visível`);
+    console.log('Botão:', confirmBtn);
 };
 
 // Atualizar total com delivery
@@ -84,39 +86,55 @@ function updateDeliveryTotal() {
 // Confirmar entrega e ir para pagamento
 window.confirmDelivery = function() {
     console.log('✅ Confirmando entrega e indo para pagamento');
+    console.log('selectedDeliveryType:', window.selectedDeliveryType);
     
     // Validações
     if (!window.selectedDeliveryType) {
+        console.error('❌ Nenhum tipo de entrega selecionado');
         alert('⚠️ Selecione um tipo de entrega');
         return;
     }
+    
+    console.log('Tipo selecionado:', window.selectedDeliveryType);
     
     if (window.selectedDeliveryType === 'delivery') {
         const name = document.getElementById('deliveryName').value.trim();
         const phone = document.getElementById('deliveryPhone').value.trim();
         const address = document.getElementById('deliveryAddress').value.trim();
         
+        console.log('Validando dados:', { name, phone, address });
+        
         if (!name || !phone || !address) {
+            console.error('❌ Dados incompletos');
             alert('⚠️ Preencha todos os dados de entrega');
             return;
         }
         
         // Armazenar dados de entrega
         window.deliveryData = { name, phone, address };
+        console.log('✅ Dados de entrega armazenados:', window.deliveryData);
     }
     
+    console.log('Fechando modal de entrega...');
     window.closeDeliveryModal();
+    console.log('Abrindo modal PIX...');
     window.openPixModal();
+    console.log('✅ Fluxo completo de confirmação executado');
 };
 
 // Abrir modal PIX
 window.openPixModal = async function() {
     console.log('💳 Abrindo modal PIX');
+    console.log('Carrinho atual:', window.cart);
     
     const cartTotal = window.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const total = window.selectedDeliveryType === 'delivery' ? cartTotal + 3.00 : cartTotal;
     
+    console.log('Total calculado:', total);
+    
     const modal = document.getElementById('pixModal');
+    console.log('Modal PIX encontrado?', !!modal);
+    
     if (!modal) {
         console.error('❌ Modal PIX não encontrado!');
         return;
@@ -125,11 +143,17 @@ window.openPixModal = async function() {
     // Mostrar modal
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+    console.log('✅ Modal PIX exibido');
     
     // Exibir valor a pagar
-    document.getElementById('pixTotal').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+    const pixTotalElement = document.getElementById('pixTotal');
+    if (pixTotalElement) {
+        pixTotalElement.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        console.log('✅ Total PIX exibido:', total);
+    }
     
     // Gerar PIX via API
+    console.log('Gerando PIX...');
     await generatePix(total);
 };
 
