@@ -1,13 +1,10 @@
 services:
   - type: web
     name: quitanda-backend
-    runtime: docker
-    dockerfilePath: ./Dockerfile
-    port: 3000
-    healthCheckPath: /
-    healthCheckTimeout: 30
-    region: ohio
-    autoDeploy: true
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node src/server.js
     envVars:
       - key: NODE_ENV
         value: production
@@ -17,3 +14,5 @@ services:
         sync: false
       - key: MP_WEBHOOK_SECRET
         sync: false
+    region: ohio
+    autoDeploy: true
