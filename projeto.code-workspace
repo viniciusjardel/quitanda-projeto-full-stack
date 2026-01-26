@@ -1,0 +1,28 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "Raiz do Projeto"
+    },
+    {
+      "path": "backend",
+      "name": "Backend"
+    },
+    {
+      "path": "frontend",
+      "name": "Frontend"
+    },
+    {
+      "path": "C:\\Users\\jarde\\OneDrive\\Desktop\\PIX-PROJECT-100% FUNCIONAL",
+      "name": "PIX-PROJECT"
+    },
+    {
+      "path": "C:\\Users\\jarde\\OneDrive\\Desktop\\Projeto Quitanda Villa Natal - FRONT PURO PRA DEPLOY",
+      "name": "FRONT PURO"
+    }
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
