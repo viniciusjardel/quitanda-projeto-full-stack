@@ -10,7 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/", paymentRoutes);
+app.use("/api", paymentRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

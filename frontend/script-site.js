@@ -1,119 +1,115 @@
-// ============================
-// PRODUTOS TESTE
-// ============================
-const produtos = [
-  { id: 1, nome: "Banana", preco: 0.02 },
-  { id: 2, nome: "Maçã", preco: 0.03 },
-  { id: 3, nome: "Laranja", preco: 0.05 },
-  { id: 4, nome: "Uva", preco: 0.08 },
-  { id: 5, nome: "Abacaxi", preco: 0.10 }
+// frontend/script-site.js
+
+const BACKEND_URL = "https://quitanda-projeto-full-stack-1.onrender.com";
+
+let produtos = [
+  { id: 1, nome: "Banana", preco: 5 },
+  { id: 2, nome: "Maçã", preco: 7 },
+  { id: 3, nome: "Laranja", preco: 4 }
 ];
 
+let carrinho = [];
 let produtoSelecionado = null;
-let quantidadeSelecionada = 1;
-let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+let quantidadeAtual = 1;
 
-// ============================
-// RENDER PRODUTOS
-// ============================
-document.addEventListener("DOMContentLoaded", () => {
+// Renderiza produtos
+function renderizarProdutos() {
   const grid = document.getElementById("productsGrid");
+  grid.innerHTML = "";
 
   produtos.forEach(produto => {
-    const div = document.createElement("div");
-    div.className = "bg-white p-4 rounded-xl shadow";
+    const card = document.createElement("div");
+    card.className = "bg-white p-4 rounded-xl shadow cursor-pointer";
+    card.onclick = () => abrirModalQuantidade(produto);
 
-    div.innerHTML = `
-      <h3 class="font-bold">${produto.nome}</h3>
-      <p>R$ ${produto.preco.toFixed(2)}</p>
-      <button class="mt-2 bg-green-600 text-white w-full py-2 rounded"
-        onclick="abrirModalQuantidade(${produto.id})">
-        Adicionar
-      </button>
+    card.innerHTML = `
+      <h2 class="font-bold text-lg">${produto.nome}</h2>
+      <p class="text-gray-600">R$ ${produto.preco.toFixed(2)}</p>
     `;
 
-    grid.appendChild(div);
+    grid.appendChild(card);
   });
-});
+}
 
-// ============================
-// MODAL
-// ============================
-function abrirModalQuantidade(id) {
-  produtoSelecionado = produtos.find(p => p.id === id);
-  quantidadeSelecionada = 1;
+// Modal quantidade
+function abrirModalQuantidade(produto) {
+  produtoSelecionado = produto;
+  quantidadeAtual = 1;
 
-  document.getElementById("productNameModal").innerText = produtoSelecionado.nome;
+  document.getElementById("productNameModal").innerText = produto.nome;
   document.getElementById("productPriceModal").innerText =
-    `R$ ${produtoSelecionado.preco.toFixed(2)}`;
-  document.getElementById("quantityInput").value = 1;
+    `R$ ${produto.preco.toFixed(2)}`;
 
+  document.getElementById("quantityInput").value = 1;
   document.getElementById("quantityModal").classList.remove("hidden");
+  document.getElementById("quantityModal").classList.add("flex");
 }
 
 function fecharModalQuantidade() {
   document.getElementById("quantityModal").classList.add("hidden");
 }
 
-// ============================
-// QUANTIDADE
-// ============================
 function aumentarQuantidade() {
-  quantidadeSelecionada++;
-  atualizarQuantidade();
+  quantidadeAtual++;
+  document.getElementById("quantityInput").value = quantidadeAtual;
 }
 
 function diminuirQuantidade() {
-  if (quantidadeSelecionada > 1) {
-    quantidadeSelecionada--;
-    atualizarQuantidade();
+  if (quantidadeAtual > 1) {
+    quantidadeAtual--;
+    document.getElementById("quantityInput").value = quantidadeAtual;
   }
 }
 
 function quantidadeManual() {
-  const v = Number(document.getElementById("quantityInput").value);
-  quantidadeSelecionada = v >= 1 ? v : 1;
-  atualizarQuantidade();
+  quantidadeAtual = parseInt(document.getElementById("quantityInput").value) || 1;
 }
 
-function atualizarQuantidade() {
-  document.getElementById("quantityInput").value = quantidadeSelecionada;
-}
-
-// ============================
-// CONFIRMAR
-// ============================
+// Confirma produto no carrinho
 function confirmarQuantidade() {
-  const existente = carrinho.find(p => p.id === produtoSelecionado.id);
+  carrinho.push({
+    ...produtoSelecionado,
+    quantidade: quantidadeAtual
+  });
 
-  if (existente) {
-    existente.qtd += quantidadeSelecionada;
-  } else {
-    carrinho.push({
-      ...produtoSelecionado,
-      qtd: quantidadeSelecionada
-    });
-  }
-
-  salvarTotal();
   fecharModalQuantidade();
+  alert("Produto adicionado ao carrinho 🛒");
 }
 
-function salvarTotal() {
-  let total = 0;
-  carrinho.forEach(p => total += p.preco * p.qtd);
-  localStorage.setItem("totalCompra", total.toFixed(2));
-  localStorage.setItem("carrinho", JSON.stringify(carrinho));
-}
-
-// ============================
-// FINALIZAR
-// ============================
-function finalizarCompra() {
-  const total = Number(localStorage.getItem("totalCompra"));
-  if (!total || total <= 0) {
+// FINALIZAR COMPRA → CRIA PAGAMENTO NO BACKEND
+async function finalizarCompra() {
+  if (carrinho.length === 0) {
     alert("Carrinho vazio");
     return;
   }
-  window.location.href = "payment.html";
+
+  const total = carrinho.reduce(
+    (soma, item) => soma + item.preco * item.quantidade,
+    0
+  );
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/order`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        items: carrinho,
+        total
+      })
+    });
+
+    const data = await response.json();
+
+    // Salva paymentId para consulta
+    localStorage.setItem("currentPaymentId", data.paymentId);
+
+    // Mostra Pix
+    showPix(data.qrCodeBase64);
+
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao criar pagamento");
+  }
 }
+
+renderizarProdutos();

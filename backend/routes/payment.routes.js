@@ -1,14 +1,19 @@
-import { Router } from "express";
+import express from "express";
 import {
-  createPix,
-  getStatus,
-  webhook
-} from "../controllers/payment.controller.js";
+  createPixPayment,
+  getOrderStatus,
+  mercadoPagoWebhook
+} from "../services/pix.service.js";
 
-const router = Router();
+const router = express.Router();
 
-router.post("/pix", createPix);
-router.get("/status/:paymentId", getStatus);
-router.post("/webhook", webhook);
+// Criar pedido + Pix
+router.post("/pay", createPixPayment);
+
+// Consultar status do pedido
+router.get("/order/:orderId", getOrderStatus);
+
+// Webhook Mercado Pago
+router.post("/webhook", mercadoPagoWebhook);
 
 export default router;
