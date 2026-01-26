@@ -105,11 +105,10 @@ function updateDeliveryTotal() {
 
 // Confirmar entrega e ir para pagamento
 window.confirmDelivery = function() {
-    console.log('🚀🚀🚀 confirmDelivery CHAMADA - PRIMEIRO LOG 🚀🚀🚀');
-    debugger; // Parar no debugger para inspecionar
+    console.error('%c🚀🚀🚀 confirmDelivery CHAMADA 🚀🚀🚀', 'color: red; font-size: 16px; font-weight: bold;');
     
     try {
-        console.log('🔴🔴🔴 FUNÇÃO confirmDelivery CHAMADA 🔴🔴🔴');
+        console.log('🔴🔴🔴 DENTRO DO TRY 🔴🔴🔴');
         console.log('selectedDeliveryType:', window.selectedDeliveryType);
         
         // Validações
@@ -572,8 +571,9 @@ if (confirmBtn) {
         console.log('⏳ Verificando se é função...');
         if (typeof window.confirmDelivery === 'function') {
             console.log('✅ É função, chamando agora...');
+            console.log('window.confirmDelivery:', window.confirmDelivery.toString().substring(0, 100));
             setTimeout(() => {
-                console.log('⏱️ setTimeout executado, chamando confirmDelivery');
+                console.error('%c⏱️ setTimeout EXECUTADO, CHAMANDO FUNÇÃO AGORA!', 'color: blue; font-weight: bold;');
                 window.confirmDelivery();
             }, 0);
         } else {
