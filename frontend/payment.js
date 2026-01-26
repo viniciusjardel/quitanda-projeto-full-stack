@@ -95,10 +95,10 @@ function updateDeliveryTotal() {
         `Subtotal: R$ ${cartTotal.toFixed(2).replace('.', ',')} + Taxa: R$ ${deliveryFee.toFixed(2).replace('.', ',')}`;
 }
 
-// Confirmar entrega e ir para pagamento
+// Confirmar entrega e ir para pagamento PIX
 window.confirmDelivery = function() {
     try {
-        console.log('✅ Confirmando entrega e indo para pagamento');
+        console.log('✅ Confirmando entrega e gerando PIX automaticamente');
         console.log('selectedDeliveryType:', window.selectedDeliveryType);
         
         // Validações
@@ -131,48 +131,75 @@ window.confirmDelivery = function() {
         console.log('📦 Fechando modal de entrega...');
         window.closeDeliveryModal();
         
-        console.log('💳 Abrindo modal PIX...');
-        window.openPixModal();
+        console.log('💳 Gerando PIX automaticamente...');
+        window.generatePixAutomatically();
         
-        console.log('✅✅✅ FLUXO COMPLETO EXECUTADO COM SUCESSO ✅✅✅');
+        console.log('✅ FLUXO COMPLETO INICIADO');
     } catch (error) {
         console.error('💥 ERRO EM confirmDelivery:', error);
         alert('❌ Erro ao processar entrega: ' + error.message);
     }
 };
 
-// Abrir modal PIX
+// Gerar PIX automaticamente com valor exato
+window.generatePixAutomatically = async function() {
+    try {
+        const cartTotal = window.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const total = window.selectedDeliveryType === 'delivery' ? cartTotal + 3.00 : cartTotal;
+        
+        console.log('💳 Gerando PIX com valor:', total);
+        
+        // Exibir modal PIX
+        const modal = document.getElementById('pixModal');
+        if (!modal) {
+            console.error('❌ Modal PIX não encontrado!');
+            return;
+        }
+        
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        // Exibir total
+        const pixTotalEl = document.getElementById('pixTotal');
+        if (pixTotalEl) {
+            pixTotalEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+        
+        // Exibir status de carregamento
+        const pixContainer = document.getElementById('pixContainer');
+        if (pixContainer) {
+            pixContainer.innerHTML = '<div class="text-gray-500 text-center">⏳ Gerando QR Code...</div>';
+        }
+        
+        // Chamar API para gerar PIX
+        console.log('📡 Chamando API para gerar PIX...');
+        await generatePix(total);
+        
+    } catch (error) {
+        console.error('💥 ERRO ao gerar PIX:', error);
+        alert('❌ Erro ao gerar PIX: ' + error.message);
+    }
+};
+
+// Abrir modal PIX (mantido para compatibilidade)
 window.openPixModal = async function() {
     console.log('💳 Abrindo modal PIX');
-    console.log('Carrinho atual:', window.cart);
     
     const cartTotal = window.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const total = window.selectedDeliveryType === 'delivery' ? cartTotal + 3.00 : cartTotal;
     
-    console.log('Total calculado:', total);
-    
     const modal = document.getElementById('pixModal');
-    console.log('Modal PIX encontrado?', !!modal);
-    
     if (!modal) {
         console.error('❌ Modal PIX não encontrado!');
         return;
     }
     
-    // Mostrar modal
     modal.classList.remove('hidden');
     modal.classList.add('flex');
-    console.log('✅ Modal PIX exibido');
     
-    // Exibir valor a pagar
-    const pixTotalElement = document.getElementById('pixTotal');
-    if (pixTotalElement) {
-        pixTotalElement.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-        console.log('✅ Total PIX exibido:', total);
-    }
+    document.getElementById('pixTotal').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
     
     // Gerar PIX via API
-    console.log('Gerando PIX...');
     await generatePix(total);
 };
 
