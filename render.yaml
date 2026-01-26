@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: quitanda-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MP_ACCESS_TOKEN
+        sync: false
+      - key: MP_PUBLIC_KEY
+        sync: false
+    healthCheckPath: /
+    region: ohio
