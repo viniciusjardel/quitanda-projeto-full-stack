@@ -8,6 +8,10 @@ const API_BASE = window.location.hostname === 'localhost'
 
 console.log('✅ payment.js CARREGADO COM SUCESSO - API_BASE:', API_BASE);
 
+// Inicializar variáveis globais de entrega
+window.selectedDeliveryType = null;
+window.deliveryData = null;
+
 // Estado do pagamento
 let currentPaymentState = {
     paymentId: null,
@@ -26,6 +30,16 @@ window.openDeliveryModal = function() {
     if (!modal) {
         console.error('❌ Modal de entrega não encontrado!');
         return;
+    }
+    
+    // Resetar seleção de entrega
+    window.selectedDeliveryType = null;
+    
+    // Garantir que botão Confirmar fica oculto até selecionar opção
+    const confirmBtn = document.getElementById('confirmDeliveryBtn');
+    if (confirmBtn) {
+        confirmBtn.classList.add('hidden');
+        confirmBtn.style.display = 'none';
     }
     
     document.getElementById('cartModal').classList.add('hidden');
@@ -51,6 +65,11 @@ window.closeDeliveryModal = function() {
 
 // Selecionar tipo de entrega
 window.selectDeliveryType = function(type) {
+    if (!type) {
+        console.error('❌ Tipo de entrega não especificado!');
+        return;
+    }
+    
     console.log(`📦 Tipo de entrega selecionado: ${type}`);
     
     const localBtn = document.getElementById('localBtn');
@@ -59,27 +78,32 @@ window.selectDeliveryType = function(type) {
     const deliveryTotal = document.getElementById('deliveryTotal');
     const confirmBtn = document.getElementById('confirmDeliveryBtn');
     
+    // Remover seleção anterior
+    if (localBtn) localBtn.classList.remove('border-green-500', 'bg-green-50');
+    if (deliveryBtn) deliveryBtn.classList.remove('border-blue-500', 'bg-blue-50');
+    
+    // Aplicar nova seleção
     if (type === 'local') {
-        localBtn.classList.add('border-green-500', 'bg-green-50');
-        deliveryBtn.classList.remove('border-blue-500', 'bg-blue-50');
-        deliveryForm.classList.add('hidden');
-        deliveryTotal.classList.add('hidden');
-    } else {
-        localBtn.classList.remove('border-green-500', 'bg-green-50');
-        deliveryBtn.classList.add('border-blue-500', 'bg-blue-50');
-        deliveryForm.classList.remove('hidden');
-        deliveryTotal.classList.remove('hidden');
+        if (localBtn) localBtn.classList.add('border-green-500', 'bg-green-50');
+        if (deliveryForm) deliveryForm.classList.add('hidden');
+        if (deliveryTotal) deliveryTotal.classList.add('hidden');
+    } else if (type === 'delivery') {
+        if (deliveryBtn) deliveryBtn.classList.add('border-blue-500', 'bg-blue-50');
+        if (deliveryForm) deliveryForm.classList.remove('hidden');
+        if (deliveryTotal) deliveryTotal.classList.remove('hidden');
         updateDeliveryTotal();
     }
     
-    // Garantir que o botão fique visível
+    // MOSTRAR botão Confirmar
     if (confirmBtn) {
         confirmBtn.classList.remove('hidden');
         confirmBtn.style.display = 'block';
+        console.log('✅ Botão Confirmar agora visível');
     }
     
     // DEFINIR A VARIÁVEL GLOBAL
     window.selectedDeliveryType = type;
+    console.log('✅ selectedDeliveryType definido como:', window.selectedDeliveryType);
 };
 
 // Atualizar total com delivery
@@ -97,13 +121,17 @@ function updateDeliveryTotal() {
 window.confirmDelivery = function() {
     try {
         console.log('✅ Confirmando entrega e gerando PIX automaticamente');
+        console.log('🔍 Valor de window.selectedDeliveryType:', window.selectedDeliveryType);
         
         // Validações
-        if (!window.selectedDeliveryType) {
-            console.error('❌ Nenhum tipo de entrega selecionado');
+        if (!window.selectedDeliveryType || window.selectedDeliveryType === null) {
+            console.error('❌ Nenhum tipo de entrega selecionado!');
+            console.log('Por favor, clique em uma opção de entrega ANTES de confirmar.');
             alert('⚠️ Selecione um tipo de entrega primeiro!\n\nClique em "🏪 Retirar no Local" ou "🚗 Entrega (Delivery)"');
             return;
         }
+        
+        console.log('✅ Tipo de entrega válido:', window.selectedDeliveryType);
         
         if (window.selectedDeliveryType === 'delivery') {
             const name = document.getElementById('deliveryName').value.trim();
