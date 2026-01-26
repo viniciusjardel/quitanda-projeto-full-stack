@@ -1,0 +1,24 @@
+{
+  "name": "quitanda-backend",
+  "version": "1.0.0",
+  "description": "Backend da plataforma Quitanda",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "quitanda",
+    "payment",
+    "pix"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
