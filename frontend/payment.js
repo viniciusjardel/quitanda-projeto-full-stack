@@ -105,8 +105,8 @@ window.confirmDelivery = function() {
         window.deliveryData = { name, phone, address };
     }
     
-    closeDeliveryModal();
-    openPixModal();
+    window.closeDeliveryModal();
+    window.openPixModal();
 };
 
 // Abrir modal PIX
@@ -261,7 +261,7 @@ function startPaymentPolling(paymentId) {
 
 // Manipular sucesso do pagamento
 function handlePaymentSuccess(paymentId, paymentData) {
-    closePixModal();
+    window.closePixModal();
     
     // Exibir notificação de sucesso
     showNotification('✅ Pagamento confirmado! Seu pedido foi recebido.');
