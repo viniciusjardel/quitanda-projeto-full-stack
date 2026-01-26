@@ -402,39 +402,6 @@ function copiarComFallback(text) {
     document.body.removeChild(textarea);
 }
 
-// Enviar para WhatsApp
-window.sendToWhatsApp = function() {
-    const cartTotal = window.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const total = window.selectedDeliveryType === 'delivery' ? cartTotal + 3.00 : cartTotal;
-    
-    let message = 'Olá! Gostaria de confirmar um pedido:\n\n';
-    
-    // Adicionar itens
-    message += '*ITENS:*\n';
-    window.cart.forEach(item => {
-        message += `- ${item.name} x${item.quantity} = R$ ${(item.price * item.quantity).toFixed(2)}\n`;
-    });
-    
-    // Adicionar tipo de entrega
-    message += `\n*ENTREGA:* ${window.selectedDeliveryType === 'delivery' ? 'Delivery (+ R$ 3,00)' : 'Retirar no local'}\n`;
-    
-    if (window.deliveryData) {
-        message += `*Nome:* ${window.deliveryData.name}\n`;
-        message += `*Telefone:* ${window.deliveryData.phone}\n`;
-        message += `*Endereço:* ${window.deliveryData.address}\n`;
-    }
-    
-    // Adicionar total
-    message += `\n*TOTAL:* R$ ${total.toFixed(2)}\n`;
-    message += `\nPagamento confirmado via PIX ✅`;
-    
-    // Número do WhatsApp
-    const whatsappNumber = '5581971028677'; // Alterar conforme necessário
-    const encodedMessage = encodeURIComponent(message);
-    
-    window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
-};
-
 // ===== FUNÇÕES AUXILIARES =====
 
 // Atualizar badge do carrinho
