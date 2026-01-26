@@ -1,8 +1,12 @@
 // ===== CONFIGURAÇÃO PIX =====
+console.log('🚀 payment.js CARREGANDO...');
+
 // Detectar ambiente automaticamente
 const API_BASE = window.location.hostname === 'localhost' 
     ? 'http://localhost:3000' 
     : 'https://quitanda-projeto-full-stack-1.onrender.com';
+
+console.log('✅ payment.js CARREGADO COM SUCESSO - API_BASE:', API_BASE);
 
 // Estado do pagamento
 let currentPaymentState = {
@@ -31,6 +35,8 @@ window.openDeliveryModal = function() {
     // Exibir total inicial
     document.getElementById('cartTotal').textContent = `R$ ${cartTotal.toFixed(2).replace('.', ',')}`;
 };
+
+console.log('✅ window.openDeliveryModal definida');
 
 // Fechar modal de entrega
 window.closeDeliveryModal = function() {
@@ -517,4 +523,10 @@ window.removeFromCart = function(index) {
     showNotification('🗑️ Produto removido do carrinho');
 };
 
+console.log('═══════════════════════════════════════');
+console.log('✅ PAYMENT.JS COMPLETAMENTE CARREGADO');
+console.log('✅ window.confirmDelivery:', typeof window.confirmDelivery);
+console.log('✅ window.openPixModal:', typeof window.openPixModal);
+console.log('✅ window.selectDeliveryType:', typeof window.selectDeliveryType);
+console.log('═══════════════════════════════════════');
 console.log('✅ payment.js carregado com sucesso');
