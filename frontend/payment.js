@@ -19,7 +19,7 @@ let currentPaymentState = {
 
 // Abrir modal de entrega
 window.openDeliveryModal = function() {
-    console.log('🚚 Abrindo modal de entrega');
+    console.log('%c🚚 ABRINDO MODAL DE ENTREGA', 'color: orange; font-size: 14px; font-weight: bold;');
     const modal = document.getElementById('deliveryModal');
     const cartTotal = window.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
@@ -31,6 +31,8 @@ window.openDeliveryModal = function() {
     document.getElementById('cartModal').classList.add('hidden');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+    
+    console.log('✅ Modal de entrega aberto, total:', cartTotal);
     
     // Exibir total inicial
     document.getElementById('cartTotal').textContent = `R$ ${cartTotal.toFixed(2).replace('.', ',')}`;
@@ -51,21 +53,13 @@ window.closeDeliveryModal = function() {
 
 // Selecionar tipo de entrega
 window.selectDeliveryType = function(type) {
-    console.log(`📦 CLIQUE EM TIPO DE ENTREGA: ${type}`);
+    console.log('%c✅ TIPO DE ENTREGA SELECIONADO: ' + type, 'color: green; font-size: 14px; font-weight: bold;');
     
     const localBtn = document.getElementById('localBtn');
     const deliveryBtn = document.getElementById('deliveryBtn');
     const deliveryForm = document.getElementById('deliveryForm');
     const deliveryTotal = document.getElementById('deliveryTotal');
     const confirmBtn = document.getElementById('confirmDeliveryBtn');
-    
-    console.log('Elementos encontrados:', {
-        localBtn: !!localBtn,
-        deliveryBtn: !!deliveryBtn,
-        deliveryForm: !!deliveryForm,
-        deliveryTotal: !!deliveryTotal,
-        confirmBtn: !!confirmBtn
-    });
     
     if (type === 'local') {
         localBtn.classList.add('border-green-500', 'bg-green-50');
@@ -84,11 +78,10 @@ window.selectDeliveryType = function(type) {
     if (confirmBtn) {
         confirmBtn.classList.remove('hidden');
         confirmBtn.style.display = 'block';
-        console.log('✅ Botão Confirmar visível');
     }
     
     window.selectedDeliveryType = type;
-    console.log(`✅ window.selectedDeliveryType = "${type}"`);
+    console.log('window.selectedDeliveryType agora é:', window.selectedDeliveryType);
 };
 
 // Atualizar total com delivery
