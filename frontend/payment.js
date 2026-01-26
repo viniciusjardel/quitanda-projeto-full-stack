@@ -19,7 +19,7 @@ let currentPaymentState = {
 
 // Abrir modal de entrega
 window.openDeliveryModal = function() {
-    console.log('%c🚚 ABRINDO MODAL DE ENTREGA', 'color: orange; font-size: 14px; font-weight: bold;');
+    console.log('🚚 Abrindo modal de entrega');
     const modal = document.getElementById('deliveryModal');
     const cartTotal = window.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
@@ -31,8 +31,6 @@ window.openDeliveryModal = function() {
     document.getElementById('cartModal').classList.add('hidden');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
-    
-    console.log('✅ Modal de entrega aberto, total:', cartTotal);
     
     // Exibir total inicial
     document.getElementById('cartTotal').textContent = `R$ ${cartTotal.toFixed(2).replace('.', ',')}`;
@@ -53,8 +51,7 @@ window.closeDeliveryModal = function() {
 
 // Selecionar tipo de entrega
 window.selectDeliveryType = function(type) {
-    console.log('%c✅ TIPO DE ENTREGA SELECIONADO: ' + type, 'color: green; font-size: 16px; font-weight: bold;');
-    console.warn('selectDeliveryType foi chamada com tipo:', type);
+    console.log(`📦 Tipo de entrega selecionado: ${type}`);
     
     const localBtn = document.getElementById('localBtn');
     const deliveryBtn = document.getElementById('deliveryBtn');
@@ -83,8 +80,6 @@ window.selectDeliveryType = function(type) {
     
     // DEFINIR A VARIÁVEL GLOBAL
     window.selectedDeliveryType = type;
-    console.log('✅ window.selectedDeliveryType agora é:', window.selectedDeliveryType);
-    console.log('typeof window.selectedDeliveryType:', typeof window.selectedDeliveryType);
 };
 
 // Atualizar total com delivery
@@ -101,26 +96,19 @@ function updateDeliveryTotal() {
 // Confirmar entrega e ir para pagamento PIX
 window.confirmDelivery = function() {
     try {
-        console.log('%c🔴 CONFIRMAR ENTREGA CLICADO 🔴', 'color: red; font-size: 16px; font-weight: bold;');
-        console.log('selectedDeliveryType:', window.selectedDeliveryType);
-        console.log('typeof selectedDeliveryType:', typeof window.selectedDeliveryType);
-        console.log('Variável está undefined?', window.selectedDeliveryType === undefined);
+        console.log('✅ Confirmando entrega e gerando PIX automaticamente');
         
         // Validações
         if (!window.selectedDeliveryType) {
-            console.error('%c❌ Nenhum tipo de entrega selecionado', 'color: red; font-size: 14px; font-weight: bold;');
+            console.error('❌ Nenhum tipo de entrega selecionado');
             alert('⚠️ Selecione um tipo de entrega primeiro!\n\nClique em "🏪 Retirar no Local" ou "🚗 Entrega (Delivery)"');
             return;
         }
-        
-        console.log('✅ Tipo selecionado:', window.selectedDeliveryType);
         
         if (window.selectedDeliveryType === 'delivery') {
             const name = document.getElementById('deliveryName').value.trim();
             const phone = document.getElementById('deliveryPhone').value.trim();
             const address = document.getElementById('deliveryAddress').value.trim();
-            
-            console.log('Validando dados:', { name, phone, address });
             
             if (!name || !phone || !address) {
                 console.error('❌ Dados incompletos');
@@ -130,16 +118,11 @@ window.confirmDelivery = function() {
             
             // Armazenar dados de entrega
             window.deliveryData = { name, phone, address };
-            console.log('✅ Dados de entrega armazenados:', window.deliveryData);
         }
         
-        console.log('📦 Fechando modal de entrega...');
         window.closeDeliveryModal();
-        
-        console.log('💳 Gerando PIX automaticamente...');
         window.generatePixAutomatically();
         
-        console.log('✅ FLUXO COMPLETO INICIADO');
     } catch (error) {
         console.error('💥 ERRO EM confirmDelivery:', error);
         alert('❌ Erro ao processar entrega: ' + error.message);
@@ -543,52 +526,36 @@ console.log('✅ window.selectDeliveryType:', typeof window.selectDeliveryType);
 console.log('═══════════════════════════════════════');
 console.log('✅ payment.js carregado com sucesso');
 // ===== CONFIGURAR EVENT LISTENERS =====
-console.log('🔧 Configurando event listeners dos botões de entrega e confirmar...');
 
 // Event listener para botão "Retirar no Local"
 const localBtn = document.getElementById('localBtn');
 if (localBtn) {
-    console.log('✅ Botão "Retirar no Local" encontrado');
     localBtn.addEventListener('click', function(e) {
-        console.log('%c🖱️ CLIQUE EM RETIRAR NO LOCAL', 'color: blue; font-size: 14px; font-weight: bold;');
         e.preventDefault();
         e.stopPropagation();
         window.selectDeliveryType('local');
     });
-} else {
-    console.error('❌ Botão "Retirar no Local" NÃO encontrado!');
 }
 
 // Event listener para botão "Entrega (Delivery)"
 const deliveryBtn = document.getElementById('deliveryBtn');
 if (deliveryBtn) {
-    console.log('✅ Botão "Entrega (Delivery)" encontrado');
     deliveryBtn.addEventListener('click', function(e) {
-        console.log('%c🖱️ CLIQUE EM DELIVERY', 'color: blue; font-size: 14px; font-weight: bold;');
         e.preventDefault();
         e.stopPropagation();
         window.selectDeliveryType('delivery');
     });
-} else {
-    console.error('❌ Botão "Entrega (Delivery)" NÃO encontrado!');
 }
 
 // Event listener para botão "Confirmar e Continuar"
 const confirmBtn = document.getElementById('confirmDeliveryBtn');
 if (confirmBtn) {
-    console.log('✅ Botão Confirmar encontrado');
     confirmBtn.addEventListener('click', function(e) {
-        console.log('🖱️ Clique no botão Confirmar detectado');
         e.preventDefault();
         e.stopPropagation();
         
         if (typeof window.confirmDelivery === 'function') {
             window.confirmDelivery();
-        } else {
-            console.error('❌ window.confirmDelivery NÃO é uma função!');
         }
     });
-    console.log('✅ Event listeners adicionados com sucesso');
-} else {
-    console.error('❌ Botão Confirmar NÃO encontrado!');
 }
