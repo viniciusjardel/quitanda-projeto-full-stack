@@ -51,7 +51,7 @@ window.closeDeliveryModal = function() {
 
 // Selecionar tipo de entrega
 window.selectDeliveryType = function(type) {
-    console.log(`📦 Tipo de entrega selecionado: ${type}`);
+    console.log(`📦 CLIQUE EM TIPO DE ENTREGA: ${type}`);
     
     const localBtn = document.getElementById('localBtn');
     const deliveryBtn = document.getElementById('deliveryBtn');
@@ -84,12 +84,11 @@ window.selectDeliveryType = function(type) {
     if (confirmBtn) {
         confirmBtn.classList.remove('hidden');
         confirmBtn.style.display = 'block';
-        console.log('✅ Botão Confirmar visível, classes:', confirmBtn.className);
-        console.log('✅ Botão pronto para clique');
+        console.log('✅ Botão Confirmar visível');
     }
     
     window.selectedDeliveryType = type;
-    console.log(`✅ Tipo de entrega definido: ${type}, botão visível`);
+    console.log(`✅ window.selectedDeliveryType = "${type}"`);
 };
 
 // Atualizar total com delivery
