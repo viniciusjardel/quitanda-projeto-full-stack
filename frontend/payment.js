@@ -543,11 +543,40 @@ console.log('✅ window.selectDeliveryType:', typeof window.selectDeliveryType);
 console.log('═══════════════════════════════════════');
 console.log('✅ payment.js carregado com sucesso');
 // ===== CONFIGURAR EVENT LISTENERS =====
-console.log('🔧 Configurando event listener do botão Confirmar...');
+console.log('🔧 Configurando event listeners dos botões de entrega e confirmar...');
 
+// Event listener para botão "Retirar no Local"
+const localBtn = document.getElementById('localBtn');
+if (localBtn) {
+    console.log('✅ Botão "Retirar no Local" encontrado');
+    localBtn.addEventListener('click', function(e) {
+        console.log('%c🖱️ CLIQUE EM RETIRAR NO LOCAL', 'color: blue; font-size: 14px; font-weight: bold;');
+        e.preventDefault();
+        e.stopPropagation();
+        window.selectDeliveryType('local');
+    });
+} else {
+    console.error('❌ Botão "Retirar no Local" NÃO encontrado!');
+}
+
+// Event listener para botão "Entrega (Delivery)"
+const deliveryBtn = document.getElementById('deliveryBtn');
+if (deliveryBtn) {
+    console.log('✅ Botão "Entrega (Delivery)" encontrado');
+    deliveryBtn.addEventListener('click', function(e) {
+        console.log('%c🖱️ CLIQUE EM DELIVERY', 'color: blue; font-size: 14px; font-weight: bold;');
+        e.preventDefault();
+        e.stopPropagation();
+        window.selectDeliveryType('delivery');
+    });
+} else {
+    console.error('❌ Botão "Entrega (Delivery)" NÃO encontrado!');
+}
+
+// Event listener para botão "Confirmar e Continuar"
 const confirmBtn = document.getElementById('confirmDeliveryBtn');
 if (confirmBtn) {
-    console.log('✅ Botão Confirmar encontrado, adicionando listener');
+    console.log('✅ Botão Confirmar encontrado');
     confirmBtn.addEventListener('click', function(e) {
         console.log('🖱️ Clique no botão Confirmar detectado');
         e.preventDefault();
@@ -559,7 +588,7 @@ if (confirmBtn) {
             console.error('❌ window.confirmDelivery NÃO é uma função!');
         }
     });
-    console.log('✅ Event listener adicionado com sucesso');
+    console.log('✅ Event listeners adicionados com sucesso');
 } else {
     console.error('❌ Botão Confirmar NÃO encontrado!');
 }
