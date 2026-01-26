@@ -1,8 +1,12 @@
 [build]
   command = "echo 'Frontend is ready'"
   publish = "frontend"
+  base = "."
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+[context.production.environment]
+  NETLIFY_USE_YARN = "false"
