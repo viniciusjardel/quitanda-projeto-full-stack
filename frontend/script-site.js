@@ -1144,39 +1144,17 @@
             };
         }
         
-        window.checkout();
+        // A função confirmDelivery do payment.js já cuida de abrir o modal PIX
+        // Removido: window.checkout();
     };
     
-    window.checkout = function() {
-        if (window.cart.length === 0) {
-            alert('Seu carrinho está vazio!');
-            return;
-        }
-        
-        const cartTotal = window.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const deliveryFee = window.deliveryType === 'delivery' ? 3.00 : 0;
-        const total = cartTotal + deliveryFee;
-        
-        let settings = {};
-        try {
-            settings = JSON.parse(localStorage.getItem('hortifruti_settings') || '{}');
-        } catch (e) {
-            console.warn('Erro ao carregar settings');
-        }
-        
-        document.getElementById('pixKey').textContent = settings.pixKey || 'Não configurado';
-        document.getElementById('pixTotal').textContent = `R$ ${total.toFixed(2)}`;
-        
-        document.getElementById('deliveryModal').classList.add('hidden');
-        document.getElementById('deliveryModal').classList.remove('flex');
-        document.getElementById('pixModal').classList.remove('hidden');
-        document.getElementById('pixModal').classList.add('flex');
-    };
+    // REMOVIDO: window.checkout estava duplicando a lógica de payment.js
+    // A função confirmDelivery em payment.js agora cuida de tudo
     
     window.closePixModal = function() {
         document.getElementById('pixModal').classList.add('hidden');
         document.getElementById('pixModal').classList.remove('flex');
-        window.toggleCart();
+        window.toggleCart?.();
     };
     
     window.copyPix = function() {
