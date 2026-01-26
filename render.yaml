@@ -3,6 +3,8 @@ services:
     name: quitanda-backend
     runtime: docker
     dockerfilePath: ./Dockerfile
+    rootDir: .
+    port: 3000
     envVars:
       - key: NODE_ENV
         value: production
@@ -10,5 +12,9 @@ services:
         sync: false
       - key: MP_PUBLIC_KEY
         sync: false
+      - key: MP_WEBHOOK_SECRET
+        sync: false
     healthCheckPath: /
+    healthCheckTimeout: 30
     region: ohio
+    autoDeploy: true
