@@ -38,23 +38,7 @@ window.openDeliveryModal = function() {
 
 console.log('✅ window.openDeliveryModal definida');
 
-// Configurar event listener do botão Confirmar
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔧 Configurando event listeners...');
-    
-    const confirmBtn = document.getElementById('confirmDeliveryBtn');
-    if (confirmBtn) {
-        console.log('✅ Botão Confirmar encontrado, adicionando listener');
-        confirmBtn.addEventListener('click', function(e) {
-            console.log('🖱️ CLIQUE NO BOTÃO CONFIRMAR DETECTADO!');
-            e.preventDefault();
-            e.stopPropagation();
-            window.confirmDelivery();
-        });
-    } else {
-        console.error('❌ Botão Confirmar NÃO encontrado!');
-    }
-});
+// Configurar event listener do botão Confirmar (será feito no final do arquivo)
 
 // Fechar modal de entrega
 window.closeDeliveryModal = function() {
@@ -567,3 +551,26 @@ console.log('✅ window.openPixModal:', typeof window.openPixModal);
 console.log('✅ window.selectDeliveryType:', typeof window.selectDeliveryType);
 console.log('═══════════════════════════════════════');
 console.log('✅ payment.js carregado com sucesso');
+// ===== CONFIGURAR EVENT LISTENERS =====
+console.log('🔧 Configurando event listener do botão Confirmar...');
+
+const confirmBtn = document.getElementById('confirmDeliveryBtn');
+if (confirmBtn) {
+    console.log('✅ Botão Confirmar encontrado, adicionando listener');
+    confirmBtn.addEventListener('click', function(e) {
+        console.log('🖱️ CLIQUE NO BOTÃO CONFIRMAR DETECTADO!');
+        console.log('Chamando window.confirmDelivery...');
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Chamar a função diretamente
+        if (typeof window.confirmDelivery === 'function') {
+            window.confirmDelivery();
+        } else {
+            console.error('❌ window.confirmDelivery NÃO é uma função!', typeof window.confirmDelivery);
+        }
+    });
+    console.log('✅ Event listener adicionado com sucesso');
+} else {
+    console.error('❌ Botão Confirmar NÃO encontrado!');
+}
