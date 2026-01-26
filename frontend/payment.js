@@ -105,10 +105,8 @@ function updateDeliveryTotal() {
 
 // Confirmar entrega e ir para pagamento
 window.confirmDelivery = function() {
-    console.error('%c🚀🚀🚀 confirmDelivery CHAMADA 🚀🚀🚀', 'color: red; font-size: 16px; font-weight: bold;');
-    
     try {
-        console.log('🔴🔴🔴 DENTRO DO TRY 🔴🔴🔴');
+        console.log('✅ Confirmando entrega e indo para pagamento');
         console.log('selectedDeliveryType:', window.selectedDeliveryType);
         
         // Validações
@@ -560,24 +558,14 @@ const confirmBtn = document.getElementById('confirmDeliveryBtn');
 if (confirmBtn) {
     console.log('✅ Botão Confirmar encontrado, adicionando listener');
     confirmBtn.addEventListener('click', function(e) {
-        console.log('🖱️ CLIQUE NO BOTÃO CONFIRMAR DETECTADO!');
-        console.log('Chamando window.confirmDelivery...');
-        console.log('typeof window.confirmDelivery:', typeof window.confirmDelivery);
-        
+        console.log('🖱️ Clique no botão Confirmar detectado');
         e.preventDefault();
         e.stopPropagation();
         
-        // Chamar a função diretamente
-        console.log('⏳ Verificando se é função...');
         if (typeof window.confirmDelivery === 'function') {
-            console.log('✅ É função, chamando agora...');
-            console.log('window.confirmDelivery:', window.confirmDelivery.toString().substring(0, 100));
-            setTimeout(() => {
-                console.error('%c⏱️ setTimeout EXECUTADO, CHAMANDO FUNÇÃO AGORA!', 'color: blue; font-weight: bold;');
-                window.confirmDelivery();
-            }, 0);
+            window.confirmDelivery();
         } else {
-            console.error('❌ window.confirmDelivery NÃO é uma função!', typeof window.confirmDelivery);
+            console.error('❌ window.confirmDelivery NÃO é uma função!');
         }
     });
     console.log('✅ Event listener adicionado com sucesso');

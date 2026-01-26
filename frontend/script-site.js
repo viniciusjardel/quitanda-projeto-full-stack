@@ -1121,35 +1121,8 @@
         modal.classList.remove('flex');
     };
     
-    window.confirmDelivery = function() {
-        if (window.deliveryType === 'delivery') {
-            // Validar campos de delivery
-            const name = document.getElementById('deliveryName').value.trim();
-            const phone = document.getElementById('deliveryPhone').value.trim();
-            const address = document.getElementById('deliveryAddress').value.trim();
-            const bloco = document.getElementById('deliveryBloco').value.trim();
-            const apto = document.getElementById('deliveryApto').value.trim();
-            
-            if (!name || !phone || !address) {
-                window.showErrorModal('Por favor, preencha todos os campos obrigatórios:\n\n✓ Nome\n✓ Telefone\n✓ Endereço');
-                return;
-            }
-            
-            window.deliveryData = {
-                name,
-                phone,
-                address,
-                bloco,
-                apto
-            };
-        }
-        
-        // A função confirmDelivery do payment.js já cuida de abrir o modal PIX
-        // Removido: window.checkout();
-    };
-    
-    // REMOVIDO: window.checkout estava duplicando a lógica de payment.js
-    // A função confirmDelivery em payment.js agora cuida de tudo
+    // REMOVIDO: window.confirmDelivery estava duplicado
+    // A função completa está agora em payment.js
     
     window.closePixModal = function() {
         document.getElementById('pixModal').classList.add('hidden');
