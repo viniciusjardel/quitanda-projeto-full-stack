@@ -359,9 +359,12 @@
             <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">💳 Pagamento via PIX</h3>
             
             <div class="bg-purple-50 border-2 border-purple-200 rounded-xl p-4 mb-4">
-                <p class="text-sm text-gray-600 mb-2 text-center">Chave PIX:</p>
-                <p id="pixKey" class="text-lg font-mono font-bold text-purple-600 text-center break-all"></p>
-                <button onclick="window.copyPix()" class="w-full mt-3 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">
+                <p class="text-sm text-gray-600 mb-3 text-center">Escaneie o QR Code ou copie a chave:</p>
+                <div id="pixContainer" class="text-center mb-3" style="min-height: 240px;">
+                    <!-- QR Code ou código PIX será inserido aqui -->
+                    <p class="text-gray-500">Gerando QR Code...</p>
+                </div>
+                <button onclick="window.copyPix()" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition font-bold">
                     📋 Copiar Chave PIX
                 </button>
             </div>

@@ -174,8 +174,10 @@ async function generatePix(amount) {
         console.log('✅ PIX gerado com sucesso:', data);
         
         // Obter container do PIX
-        const pixKeyElement = document.getElementById('pixKey');
-        const pixContainer = pixKeyElement.parentElement;
+        const pixContainer = document.getElementById('pixContainer');
+        
+        // Armazenar o código PIX globalmente para a função copyPix
+        window.currentPixCode = data.qr_code;
         
         // Limpar conteúdo anterior
         pixContainer.innerHTML = '';
@@ -183,11 +185,11 @@ async function generatePix(amount) {
         // Se houver QR Code em base64, mostrar como imagem
         if (data.qr_code_base64) {
             pixContainer.innerHTML = `
-                <div style="text-align: center;">
+                <div style="text-align: center; width: 100%;">
                     <img src="data:image/png;base64,${data.qr_code_base64}" 
                          alt="QR Code PIX" 
-                         style="width: 220px; height: 220px; margin: 15px auto; display: block; border: 2px solid #ddd; border-radius: 8px;">
-                    <p style="text-align: center; margin-top: 15px; font-size: 12px; color: #666; word-break: break-all; font-family: monospace; padding: 0 5px;">
+                         style="width: 220px; height: 220px; margin: 0 auto 15px; display: block; border: 2px solid #ddd; border-radius: 8px;">
+                    <p style="text-align: center; font-size: 11px; color: #666; word-break: break-all; font-family: monospace; padding: 0 5px; margin: 0;">
                         ${data.qr_code}
                     </p>
                 </div>
@@ -200,13 +202,6 @@ async function generatePix(amount) {
                 </p>
             `;
         }
-        
-        // Adicionar botão de copiar
-        const copyBtn = document.createElement('button');
-        copyBtn.textContent = '📋 Copiar Chave PIX';
-        copyBtn.className = 'w-full mt-3 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition';
-        copyBtn.onclick = () => window.copyPix(data.qr_code);
-        pixContainer.appendChild(copyBtn);
         
         // Salvar ID do pagamento
         currentPaymentState.paymentId = data.id;
@@ -224,10 +219,14 @@ async function generatePix(amount) {
         alert(`❌ Erro ao gerar PIX: ${error.message}`);
         
         // Mostrar mensagem de erro no modal
-        const pixKeyElement = document.getElementById('pixKey');
-        if (pixKeyElement) {
-            pixKeyElement.textContent = `Erro: ${error.message}`;
-            pixKeyElement.style.color = '#dc2626';
+        const pixContainer = document.getElementById('pixContainer');
+        if (pixContainer) {
+            pixContainer.innerHTML = `
+                <div style="text-align: center; color: #dc2626; padding: 20px;">
+                    <p style="font-size: 16px; font-weight: bold;">⚠️ Erro ao gerar QR Code</p>
+                    <p style="font-size: 12px; margin-top: 10px;">${error.message}</p>
+                </div>
+            `;
         }
     }
 }
@@ -292,13 +291,14 @@ function handlePaymentSuccess(paymentId, paymentData) {
 
 // Copiar PIX
 window.copyPix = function(pixCode) {
-    // Se receber o código como parâmetro, use-o. Caso contrário, tente extrair do DOM
-    let text = pixCode;
+    // Usar o código passado, ou o armazenado globalmente
+    let text = pixCode || window.currentPixCode;
     
+    // Se ainda não tiver, tenta extrair do DOM
     if (!text) {
-        const pixContainer = document.getElementById('pixKey').parentElement;
+        const pixContainer = document.getElementById('pixContainer');
         const pixElement = pixContainer.querySelector('p');
-        text = pixElement ? pixElement.textContent : document.getElementById('pixKey').textContent;
+        text = pixElement ? pixElement.textContent : null;
     }
     
     if (!text) {
@@ -308,13 +308,11 @@ window.copyPix = function(pixCode) {
     
     if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {
-            alert('✅ Código PIX copiado para a área de transferência!');
+            alert('✅ Código PIX copiado!');
         }).catch(() => {
-            // Fallback
             copiarComFallback(text);
         });
     } else {
-        // Fallback para browsers antigos
         copiarComFallback(text);
     }
 };
